@@ -1,8 +1,8 @@
 package com.example.springrestapi.events;
 
 import com.example.springrestapi.common.TestDescription;
+import com.example.springrestapi.mapper.ModernMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,6 +28,9 @@ class EventControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    ModernMapper modernMapper;
+
     @Test
     void createEvent() throws Exception {
         Event event = Event.builder()
@@ -46,7 +49,7 @@ class EventControllerTest {
         mockMvc.perform(post("/api/events/")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaTypes.HAL_JSON)
-                        .content(objectMapper.writeValueAsString(event)))
+                        .content(objectMapper.writeValueAsString(modernMapper.toDto(event))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
