@@ -1,6 +1,7 @@
 package com.example.springrestapi.events;
 
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import java.time.LocalDateTime;
@@ -8,10 +9,10 @@ import java.time.LocalDateTime;
 @Component
 public class EventValidator {
 
-    public void validate(EventDto eventDto, Errors errors) {
+    public void validate(EventDto eventDto, BindingResult bindingResult) {
         if(eventDto.getBasePrice() > eventDto.getMaxPrice() && eventDto.getMaxPrice() != 0) {
-            errors.rejectValue("basePrice", "wrongValue", "BasePrice is wrong.");
-            errors.rejectValue("maxPrice", "wrongValue", "MaxPrice is wrong.");
+            bindingResult.rejectValue("basePrice", "wrongValue", "BasePrice is wrong.");
+            bindingResult.rejectValue("maxPrice", "wrongValue", "MaxPrice is wrong.");
         }
 
         LocalDateTime endEventDateTime = eventDto.getEndEventDateTime();
@@ -19,7 +20,7 @@ public class EventValidator {
         if(endEventDateTime.isBefore(eventDto.getBeginEventDateTime()) ||
                 endEventDateTime.isBefore(eventDto.getCloseEnrollmentDateTime()) ||
                 endEventDateTime.isBefore(eventDto.getBeginEnrollmentDateTime())) {
-            errors.rejectValue("endEventDateTime", "wrongValue", "Wrong Date Time");
+            bindingResult.rejectValue("endEventDateTime", "wrongValue", "Wrong Date Time");
         }
     }
 }

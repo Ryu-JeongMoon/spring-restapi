@@ -14,7 +14,7 @@ public class ErrorSerializer extends JsonSerializer<BindingResult> {
     @Override
     public void serialize(BindingResult bindingResult, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         gen.writeStartArray();
-        bindingResult.getFieldErrors().stream().forEach(e -> {
+        bindingResult.getFieldErrors().forEach(e -> {
             try {
                 gen.writeStartObject();
                 gen.writeStringField("field", e.getField());

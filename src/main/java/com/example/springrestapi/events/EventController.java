@@ -2,18 +2,16 @@ package com.example.springrestapi.events;
 
 import com.example.springrestapi.mapper.ModernMapper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -27,20 +25,33 @@ public class EventController {
     private final ModernMapper modernMapper;
     private final EventValidator eventValidator;
 
+    // HATEOAS link added
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Validated EventDto eventDto, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult);
         }
 
         eventValidator.validate(eventDto, bindingResult);
-        if(bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResult);
         }
 
         Event event = modernMapper.toEntity(eventDto);
-        Event newEvent = this.eventRepository.save(event);
-        URI createdURI = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createdURI).body(newEvent);
+        event.update();
+        Event newEvent = eventRepository.save(event);
+
+        /**
+         * ControllerLinkBuilder -> WebMvcBuilder 로 변경
+         * 이놈은 deprecated
+         */
+
+        WebMvcLinkBuilder builder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createdURI = builder.toUri();
+        EventModel eventModel = new EventModel(newEvent);
+
+        eventModel.add(linkTo(EventController.class).withRel("query-events"));
+        eventModel.add(linkTo(EventController.class).withRel("update-events"));
+        return ResponseEntity.created(createdURI).body(eventModel);
     }
 }
