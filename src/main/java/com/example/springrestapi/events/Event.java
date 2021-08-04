@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 public class Event {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Integer id;
 
     private String name;
@@ -33,4 +34,11 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 
+    public void update() {
+        // Update free
+        this.free = this.basePrice == 0 && this.maxPrice == 0;
+
+        // Update offline
+        this.offline = this.location != null && !this.location.isBlank();
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.springrestapi.events;
 
+import com.example.springrestapi.mapper.ModernMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
@@ -23,7 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class EventController {
 
     private final EventRepository eventRepository;
-    private final ModelMapper modelMapper;
+    private final ModernMapper modernMapper;
     private final EventValidator eventValidator;
 
     @PostMapping
@@ -37,7 +38,7 @@ public class EventController {
             return ResponseEntity.badRequest().build();
         }
 
-        Event event = modelMapper.map(eventDto, Event.class);
+        Event event = modernMapper.toEntity(eventDto);
         Event newEvent = this.eventRepository.save(event);
         URI createdURI = linkTo(EventController.class).slash(newEvent.getId()).toUri();
         return ResponseEntity.created(createdURI).body(newEvent);

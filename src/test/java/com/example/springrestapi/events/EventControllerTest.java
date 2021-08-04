@@ -95,7 +95,7 @@ class EventControllerTest {
     }
 
     @Test
-    @TestDescription("잘못된 입력값이 입력됬을 때")
+    @TestDescription("잘못된 입력값이 입력됐을 때")
     public void createEvent_Bad_Request_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
