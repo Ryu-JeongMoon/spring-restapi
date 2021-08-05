@@ -1,4 +1,7 @@
 == 인사하기
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
 
 === Request
 
